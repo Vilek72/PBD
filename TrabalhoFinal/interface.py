@@ -2,22 +2,53 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import winsound
+import threading
 
 class DatabaseApp:
     def __init__(self, master):
-        self.master = master
-        self.master.title("Sistema de Gerenciamento")
+        self.master = master  # Correção principal aqui
+        self.master.title("VL Energia Solar | Sistema de Gerenciamento de Banco de Dados")
         self.master.geometry("1200x700")
         self.master.resizable(True, True)
+
+        # Restante da inicialização...
+        self.stop_music = False
+        self.music_thread = threading.Thread(target=self.play_background_music, daemon=True)
+        self.music_thread.start()
         
-        # Conectar ao banco de dados
         self.conn = sqlite3.connect('empresa.db')
         self.cursor = self.conn.cursor()
         self.create_tables()
         
-        # Criar interface
         self.create_widgets()
         self.load_tables()
+        
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+        
+    def play_background_music(self):
+        """Reproduz música em loop usando winsound"""
+        try:
+            # Toca o som em loop contínuo apenas uma vez
+            winsound.PlaySound(
+                "TrabalhoFinal/background_music.WAV", 
+                winsound.SND_FILENAME | 
+                winsound.SND_LOOP | 
+                winsound.SND_ASYNC
+            )
+            # Mantém a thread ativa para não encerrar o loop
+            while not self.stop_music:
+                threading.Event().wait(1)
+                
+        except Exception as e:
+            messagebox.showwarning("Aviso", f"Erro na música: {str(e)}")
+
+    def on_close(self):
+        """Encerra a aplicação corretamente"""
+        self.stop_music = True
+        winsound.PlaySound(None, winsound.SND_PURGE)
+        self.conn.close()
+        self.master.destroy()
         
     def create_tables(self):
         try:
