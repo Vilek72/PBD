@@ -126,6 +126,7 @@ class DatabaseApp:
         
         ttk.Button(btn_frame, text="Adicionar", command=self.add_record).pack(side='left', padx=5)
         ttk.Button(btn_frame, text="Visualizar", command=self.view_records).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="Remover", command=self.remove_record).pack(side='left', padx=5)
 
         # Campos de entrada
         self.entry_frame = ttk.LabelFrame(main_frame, text="Campos")
@@ -233,6 +234,49 @@ class DatabaseApp:
                 
         except sqlite3.Error as e:
             messagebox.showerror("Erro", f"Falha ao carregar dados:\n{str(e)}")
+
+    def remove_record(self):
+        tabela = self.table_combo.get()
+        selected_item = self.tree.selection()
+        
+        if not tabela:
+            messagebox.showerror("Erro", "Selecione uma tabela primeiro!")
+            return
+            
+        if not selected_item:
+            messagebox.showerror("Erro", "Selecione um registro para remover!")
+            return
+            
+        try:
+            # Obter chave primária
+            self.cursor.execute(f'PRAGMA table_info("{tabela}")')
+            colunas_info = self.cursor.fetchall()
+            primary_key = [col[1] for col in colunas_info if col[5] == 1]
+            
+            if not primary_key:
+                messagebox.showerror("Erro", "Tabela sem chave primária definida!")
+                return
+                
+            # Obter valor da PK
+            values = self.tree.item(selected_item[0], 'values')
+            pk_value = values[0]
+            
+            # Confirmar exclusão
+            if not messagebox.askyesno("Confirmar", "Deseja realmente excluir este registro?"):
+                return
+                
+            # Executar exclusão
+            query = f'DELETE FROM "{tabela}" WHERE "{primary_key[0]}" = ?'
+            self.cursor.execute(query, (pk_value,))
+            self.conn.commit()
+            
+            messagebox.showinfo("Sucesso", "Registro removido com sucesso!")
+            self.view_records()
+            
+        except sqlite3.Error as e:
+            messagebox.showerror("Erro", f"Falha ao remover registro:\n{str(e)}")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Ocorreu um erro inesperado:\n{str(e)}")
 
     def __del__(self):
         if hasattr(self, 'conn'):
