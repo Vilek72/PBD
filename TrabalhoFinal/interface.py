@@ -153,13 +153,11 @@ class DatabaseApp:
         self.table_combo['values'] = [t[0] for t in self.cursor.fetchall()]
 
     def load_columns(self, event=None):
-        # Limpar campos
         for widget in self.entry_frame.winfo_children():
             widget.destroy()
             
         tabela = self.table_combo.get()
         try:
-            # Obter colunas com tratamento de erros
             self.cursor.execute(f'PRAGMA table_info("{tabela}")')
             colunas = [col[1] for col in self.cursor.fetchall()]
             
@@ -167,7 +165,6 @@ class DatabaseApp:
                 messagebox.showwarning("Aviso", "Tabela sem colunas!")
                 return
                 
-            # Criar campos de entrada
             self.entries = {}
             for idx, coluna in enumerate(colunas):
                 row = ttk.Frame(self.entry_frame)
@@ -178,10 +175,54 @@ class DatabaseApp:
                 
                 entry = ttk.Entry(row)
                 entry.pack(side='left', fill='x', expand=True)
+                
+                # Validações
+                self.add_input_validation(entry, coluna)
+                self.add_format_hint(entry, coluna)
+                
                 self.entries[coluna] = entry
                 
         except sqlite3.Error as e:
             messagebox.showerror("Erro", f"Falha ao carregar colunas:\n{str(e)}")
+
+    def add_input_validation(self, entry, column_name):
+        def validate(new_value):
+            if 'cpf' in column_name.lower():
+                return new_value.isdigit() and len(new_value) <= 11
+            elif 'cnpj' in column_name.lower():
+                return new_value.isdigit() and len(new_value) <= 14
+            elif 'id' in column_name.lower() or column_name.lower().endswith('_id'):
+                return new_value.isdigit()
+            elif 'data' in column_name.lower():
+                return len(new_value) <= 10
+            elif 'valor' in column_name.lower() or 'consumo' in column_name.lower():
+                return self.is_float_or_empty(new_value)
+            return True
+        
+        val_cmd = (entry.register(lambda P: validate(P)), '%P')
+        entry.config(validate='key', validatecommand=val_cmd)
+
+    def add_format_hint(self, entry, column_name):
+        hint = ""
+        if 'cpf' in column_name.lower():
+            hint = " (11 dígitos)"
+        elif 'cnpj' in column_name.lower():
+            hint = " (14 dígitos)"
+        elif 'id' in column_name.lower():
+            hint = " (número)"
+        elif 'data' in column_name.lower():
+            hint = " (AAAA-MM-DD)"
+            
+        ttk.Label(entry.master, text=hint, foreground='gray').pack(side='left', padx=5)
+
+    def is_float_or_empty(self, value):
+        try:
+            if value in ('', '.'):
+                return True
+            float(value)
+            return True
+        except ValueError:
+            return False
 
     def add_record(self):
         tabela = self.table_combo.get()
@@ -192,20 +233,44 @@ class DatabaseApp:
         colunas = list(self.entries.keys())
         valores = [entry.get() for entry in self.entries.values()]
         
+        # Validações
+        for col, val in zip(colunas, valores):
+            if 'cpf' in col.lower() and len(val) != 11:
+                messagebox.showerror("Erro", f"CPF deve ter 11 dígitos!\nCampo: {col}")
+                return
+            elif 'cnpj' in col.lower() and len(val) != 14:
+                messagebox.showerror("Erro", f"CNPJ deve ter 14 dígitos!\nCampo: {col}")
+                return
+            elif ('id' in col.lower() or '_id' in col.lower()) and not val.isdigit():
+                messagebox.showerror("Erro", f"ID deve ser numérico!\nCampo: {col}")
+                return
+            elif 'data' in col.lower() and not self.validar_data(val):
+                messagebox.showerror("Erro", f"Data inválida! Use AAAA-MM-DD\nCampo: {col}")
+                return
+            
         try:
-            # Criar query com tratamento de nomes
             query = f'INSERT INTO "{tabela}" ({", ".join(colunas)}) VALUES ({", ".join(["?"]*len(valores))})'
             self.cursor.execute(query, valores)
             self.conn.commit()
             
-            messagebox.showinfo("Sucesso", "Registro adicionado com sucesso!")
-            
-            # Limpar campos
+            messagebox.showinfo("Sucesso", "Registro adicionado!")
             for entry in self.entries.values():
                 entry.delete(0, 'end')
                 
         except sqlite3.Error as e:
-            messagebox.showerror("Erro", f"Falha ao inserir registro:\n{str(e)}")
+            messagebox.showerror("Erro", f"Falha ao inserir:\n{str(e)}")
+
+    def validar_data(self, data):
+        if not data:
+            return True
+        try:
+            partes = data.split('-')
+            if len(partes) != 3:
+                return False
+            ano, mes, dia = map(int, partes)
+            return (1 <= mes <= 12) and (1 <= dia <= 31) and (ano > 0)
+        except:
+            return False
 
     def view_records(self):
         tabela = self.table_combo.get()
@@ -215,68 +280,53 @@ class DatabaseApp:
         self.tree.delete(*self.tree.get_children())
         
         try:
-            # Obter colunas
             self.cursor.execute(f'PRAGMA table_info("{tabela}")')
             colunas = [col[1] for col in self.cursor.fetchall()]
             
-            # Configurar treeview
             self.tree['columns'] = colunas
             self.tree['show'] = 'headings'
             
             for col in colunas:
                 self.tree.heading(col, text=col)
-                self.tree.column(col, width=150, stretch=True)
+                self.tree.column(col, width=120, stretch=True)
                 
-            # Carregar dados
             self.cursor.execute(f'SELECT * FROM "{tabela}"')
-            for row in self.cursor.fetchall():
-                self.tree.insert('', 'end', values=row)
+            for linha in self.cursor.fetchall():
+                self.tree.insert('', 'end', values=linha)
                 
         except sqlite3.Error as e:
-            messagebox.showerror("Erro", f"Falha ao carregar dados:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar dados:\n{str(e)}")
 
     def remove_record(self):
         tabela = self.table_combo.get()
-        selected_item = self.tree.selection()
+        selecionado = self.tree.selection()
         
         if not tabela:
-            messagebox.showerror("Erro", "Selecione uma tabela primeiro!")
+            messagebox.showerror("Erro", "Selecione uma tabela!")
             return
             
-        if not selected_item:
-            messagebox.showerror("Erro", "Selecione um registro para remover!")
+        if not selecionado:
+            messagebox.showerror("Erro", "Selecione um registro!")
             return
             
         try:
-            # Obter chave primária
             self.cursor.execute(f'PRAGMA table_info("{tabela}")')
-            colunas_info = self.cursor.fetchall()
-            primary_key = [col[1] for col in colunas_info if col[5] == 1]
+            colunas = self.cursor.fetchall()
+            pk = [col[1] for col in colunas if col[5] == 1][0]
             
-            if not primary_key:
-                messagebox.showerror("Erro", "Tabela sem chave primária definida!")
+            valor_pk = self.tree.item(selecionado[0])['values'][0]
+            
+            if not messagebox.askyesno("Confirmar", "Excluir este registro?"):
                 return
                 
-            # Obter valor da PK
-            values = self.tree.item(selected_item[0], 'values')
-            pk_value = values[0]
-            
-            # Confirmar exclusão
-            if not messagebox.askyesno("Confirmar", "Deseja realmente excluir este registro?"):
-                return
-                
-            # Executar exclusão
-            query = f'DELETE FROM "{tabela}" WHERE "{primary_key[0]}" = ?'
-            self.cursor.execute(query, (pk_value,))
+            self.cursor.execute(f'DELETE FROM "{tabela}" WHERE "{pk}" = ?', (valor_pk,))
             self.conn.commit()
             
-            messagebox.showinfo("Sucesso", "Registro removido com sucesso!")
+            messagebox.showinfo("Sucesso", "Registro removido!")
             self.view_records()
             
-        except sqlite3.Error as e:
-            messagebox.showerror("Erro", f"Falha ao remover registro:\n{str(e)}")
         except Exception as e:
-            messagebox.showerror("Erro", f"Ocorreu um erro inesperado:\n{str(e)}")
+            messagebox.showerror("Erro", f"Falha ao remover:\n{str(e)}")
 
     def __del__(self):
         if hasattr(self, 'conn'):
