@@ -140,11 +140,19 @@ FOR EACH ROW
 BEGIN
     DECLARE total DOUBLE;
     
-    SELECT SUM(pv.quantidade * pt.preco) INTO total
-    FROM ProdutoVenda pv
-    JOIN ProdutoTipo pt ON pv.idProduto = pt.idProduto
-    WHERE pv.codPedido = OLD.codPedido;
+SELECT 
+    SUM(pv.quantidade * pt.preco)
+INTO total FROM
+    ProdutoVenda pv
+        JOIN
+    ProdutoTipo pt ON pv.idProduto = pt.idProduto
+WHERE
+    pv.codPedido = OLD.codPedido;
     
-    UPDATE Venda SET valor = IFNULL(total, 0) WHERE codPedido = OLD.codPedido;
+UPDATE Venda 
+SET 
+    valor = IFNULL(total, 0)
+WHERE
+    codPedido = OLD.codPedido;
 END//
 DELIMITER ;
