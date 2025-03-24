@@ -1,5 +1,3 @@
-CREATE SCHEMA EmpresaNome;
-
 Create Table Cliente (
 idCliente		int				auto_increment,
 nome			varchar(100)	NOT NULL,
@@ -23,29 +21,28 @@ idCliente		int,
 endereco		varchar(255)	DEFAULT NULL,
 
 PRIMARY KEY (cpf),
-FOREIGN KEY (idCliente) REFERENCES Cliente(id)
+FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 );
 
 
 Create Table PessoaJuridica (
-cpnj			varchar(13),
+cnpj			varchar(13),
 nomeEmpresa		varchar(50),
 endEmpresa		varchar(255)	DEFAULT NULL,
 idCliente		int,
 
 PRIMARY KEY (cnpj),
-FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
+FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 );
 
 Create Table Fornecedor (
-idFunc			int				AUTO_INCREMENT,
+idFornec			int				AUTO_INCREMENT,
 cnpjFornec		varchar(13)		UNIQUE,
 nomeFornec		varchar(50)		NOT NULL,
 endFornec		varchar(255)	DEFAULT NULL,
 
-PRIMARY KEY (id)
+PRIMARY KEY (idFornec)
 );
-
 
 
 Create Table Funcionario (
@@ -61,7 +58,7 @@ PRIMARY KEY (idFunc)
 Create Table Tecnico (
 idFunc			int,
 salario			numeric(12,2),
-servicos		int			AUTO_INCREMENT,
+servicos		int,
 
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 );
@@ -69,7 +66,7 @@ FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 Create Table Vendedor (
 idFunc		int,
 salario		numeric(12,2),
-vendas		int				AUTO_INCREMENT,
+vendas		int,
 
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
@@ -81,7 +78,7 @@ salario		numeric(12,2),
 idGerente	int				AUTO_INCREMENT,
 
 PRIMARY KEY (idGerente),
-FOREIGN KEY (idFunc) REFERENCES Funcionario(id)
+FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
 );
 
@@ -91,7 +88,6 @@ idCliente		int,
 idFunc			int,
 valor			double,
 dataVenda		date		NOT NULL,
-
 
 PRIMARY KEY (codPedido),
 FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
@@ -109,16 +105,6 @@ FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
 );
 
-Create Table ProdutoVenda (
-codPedido		int,
-idProduto		int,
-quantidade		int,
-
-FOREIGN KEY (codPedido) REFERENCES Pedido(codPedido),
-FOREIGN KEY (idProduto) REFERENCES ProdutoTipo(idProduto)
-
-);
-
 Create Table ProdutoTipo (
 idProduto		int					AUTO_INCREMENT,
 idFornec		int,
@@ -126,6 +112,16 @@ nome			varchar(100)		NOT NULL,
 
 PRIMARY KEY (idProduto),
 FOREIGN KEY (idFornec) REFERENCES Fornecedor(idFornec)
+
+);
+
+Create Table ProdutoVenda (
+codPedido		int,
+idProduto		int,
+quantidade		int,
+
+FOREIGN KEY (codPedido) REFERENCES Venda(codPedido),
+FOREIGN KEY (idProduto) REFERENCES ProdutoTipo(idProduto)
 
 );
 
