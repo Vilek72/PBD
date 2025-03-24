@@ -89,6 +89,7 @@ idFunc			int,
 valor			double,
 dataVenda		date		NOT NULL,
 
+
 PRIMARY KEY (codPedido),
 FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
@@ -136,3 +137,4 @@ FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
 );
+
