@@ -26,7 +26,7 @@ FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 
 
 Create Table PessoaJuridica (
-cnpj			varchar(13),
+cnpj			varchar(14),
 nomeEmpresa		varchar(50)   NOT NULL,
 endEmpresa		varchar(255)	DEFAULT NULL,
 idCliente		int,
@@ -37,7 +37,7 @@ FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 
 Create Table Fornecedor (
 idFornec			int				AUTO_INCREMENT,
-cnpjFornec		varchar(13)		UNIQUE,
+cnpjFornec		varchar(14)		UNIQUE,
 nomeFornec		varchar(50)		NOT NULL,
 endFornec		varchar(255)	DEFAULT NULL,
 
