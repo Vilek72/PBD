@@ -78,8 +78,7 @@ CREATE TRIGGER before_tecnico_insert
 BEFORE INSERT ON Tecnico
 FOR EACH ROW
 BEGIN
-    IF EXISTS (SELECT 1 FROM Vendedor WHERE idFunc = NEW.idFunc) OR
-       EXISTS (SELECT 1 FROM Administrador WHERE idFunc = NEW.idFunc) THEN
+    IF EXISTS (SELECT 1 FROM Vendedor WHERE idFunc = NEW.idFunc) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Funcionário já é especializado em outra área';
     END IF;
@@ -89,23 +88,12 @@ CREATE TRIGGER before_vendedor_insert
 BEFORE INSERT ON Vendedor
 FOR EACH ROW
 BEGIN
-    IF EXISTS (SELECT 1 FROM Tecnico WHERE idFunc = NEW.idFunc) OR
-       EXISTS (SELECT 1 FROM Administrador WHERE idFunc = NEW.idFunc) THEN
+    IF EXISTS (SELECT 1 FROM Tecnico WHERE idFunc = NEW.idFunc) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Funcionário já é especializado em outra área';
     END IF;
 END//
 
-CREATE TRIGGER before_administrador_insert
-BEFORE INSERT ON Administrador
-FOR EACH ROW
-BEGIN
-    IF EXISTS (SELECT 1 FROM Tecnico WHERE idFunc = NEW.idFunc) OR
-       EXISTS (SELECT 1 FROM Vendedor WHERE idFunc = NEW.idFunc) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Funcionário já é especializado em outra área';
-    END IF;
-END//
 DELIMITER ;
 
 DELIMITER //
