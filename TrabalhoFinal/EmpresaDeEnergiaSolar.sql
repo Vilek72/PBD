@@ -1,45 +1,37 @@
-
 CREATE SCHEMA EmpresaNome;
 
 Create Table Cliente (
-idCliente		int,
-cpf				varchar(11)		DEFAULT NULL,
-cnpj			varchar(13)		DEFAULT NULL,
+idCliente		int				auto_increment,
+nome			varchar(100)	NOT NULL,
 
-PRIMARY KEY (idCliente),
-FOREIGN KEY	(cpf) REFERENCES PessoaFisica(cpf),
-FOREIGN KEY (cnpj) REFERENCES PessoaJuridica(cnpj)
+PRIMARY KEY (idCliente)
+
+);
+
+Create Table Telefone (
+idCliente		int,
+numTelefone		varchar(11),
+
+PRIMARY KEY (numTelefone),
+FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 
 );
 
 Create Table PessoaFisica (
 cpf				varchar(11),
 idCliente		int,
-nome			varchar(50)		NOT NULL,
 endereco		varchar(255)	DEFAULT NULL,
 
-
 PRIMARY KEY (cpf),
-FOREIGN KEY (id_cliente) REFERENCES Cliente(id)
+FOREIGN KEY (idCliente) REFERENCES Cliente(id)
 );
 
-Create Table Telefone (
-cpf				varchar(11),	
-cnpj			varchar(13),
-num_telefone	varchar(11),
-
-PRIMARY KEY (num_telefone),
-FOREIGN KEY (cpf) REFERENCES PessoaFisica(cpf),
-FOREIGN KEY (cnpj) REFERENCES PessoaJuridica(cnpj)
-
-);
 
 Create Table PessoaJuridica (
 cpnj			varchar(13),
 nomeEmpresa		varchar(50),
 endEmpresa		varchar(255)	DEFAULT NULL,
-id_cliente		int,
-
+idCliente		int,
 
 PRIMARY KEY (cnpj),
 FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
@@ -63,9 +55,7 @@ nomeFunc		varchar(50)		NOT NULL,
 nascFunc		date,
 endFunc			varchar(255),
 
-
 PRIMARY KEY (idFunc)
-	
 );
 
 Create Table Tecnico (
@@ -74,14 +64,12 @@ salario			numeric(12,2),
 servicos		int			AUTO_INCREMENT,
 
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
-
 );
 
 Create Table Vendedor (
 idFunc		int,
 salario		numeric(12,2),
 vendas		int				AUTO_INCREMENT,
-
 
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
@@ -99,16 +87,14 @@ FOREIGN KEY (idFunc) REFERENCES Funcionario(id)
 
 Create Table Venda (
 codPedido		int,
-cpfCliente		varchar(11),
-cnpjCliente		varchar(13),
+idCliente		int,
 idFunc			int,
 valor			double,
 dataVenda		date		NOT NULL,
 
 
 PRIMARY KEY (codPedido),
-FOREIGN KEY (cpfCliente) REFERENCES PessoaFisica(cpf),
-FOREIGN KEY (cnpjCliente) REFERENCES PessoaJuridica(cnpj),
+FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
 FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
 );
@@ -124,37 +110,33 @@ FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 );
 
 Create Table ProdutoVenda (
-id_pedido		int,
-id_produto		int,
+codPedido		int,
+idProduto		int,
 quantidade		int,
 
-FOREIGN KEY (id_pedido) REFERENCES Pedido(id),
-FOREIGN KEY (id_produto) REFERENCES ProdutoTipo(id)
+FOREIGN KEY (codPedido) REFERENCES Pedido(codPedido),
+FOREIGN KEY (idProduto) REFERENCES ProdutoTipo(idProduto)
 
 );
 
 Create Table ProdutoTipo (
-idProduto		int			AUTO_INCREMENT,
-id_fornecedor	int,
-descricao		varchar(200),
+idProduto		int					AUTO_INCREMENT,
+idFornec		int,
+nome			varchar(100)		NOT NULL,
 
-PRIMARY KEY (id),
+PRIMARY KEY (idProduto),
 FOREIGN KEY (idFornec) REFERENCES Fornecedor(idFornec)
 
 );
 
 Create Table ProdutoCliente (
-id_cliente		int,
-id_produto		int,
-id_func			int,
-data_inst		date,
+idCliente		int,
+idProduto		int,
+idFunc			int,
+dataInst		date,
 consumo			double,
 
-PRIMARY KEY (id_cliente),
-FOREIGN KEY (id_cliente) REFERENCES Cliente(id),
-FOREIGN KEY (id_func) REFERENCES Funcionario(id)
+FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
+FOREIGN KEY (idFunc) REFERENCES Funcionario(idFunc)
 
 );
-
-
-
