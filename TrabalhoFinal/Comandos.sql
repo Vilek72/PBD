@@ -14,16 +14,20 @@ INSERT INTO PessoaJuridica (cnpj, nomeEmpresa, endEmpresa, idCliente) VALUES
 ('12345678000190', 'Empresa ABC Ltda', 'Av. X, 1000 - São Paulo/SP', 3),
 ('98765432000181', 'Tech Solutions SA', 'Rua Y, 2000 - Campinas/SP', 5);
 
-INSERT INTO Telefone (idCliente, numTelefone) VALUES 
-(1, '11987654321'),
-(2, '21987654321'),
-(3, '1133334444'),
-(4, '3133335555'),
-(5, '1933336666');
+INSERT INTO TelefoneCliente (idCliente, numTelefone) VALUES 
+(1, '53987654321'),
+(2, '51987654321'),
+(3, '5333334444'),
+(4, '5333335555'),
+(5, '5333336666');
 
 INSERT INTO Fornecedor (cnpjFornec, nomeFornec, endFornec) VALUES 
 ('11222333000144', 'Fornecedor Alpha', 'Rua Z, 500 - São Paulo/SP'),
 ('44555666000177', 'Fornecedor Beta', 'Av. W, 600 - Curitiba/PR');
+
+INSERT INTO TelefoneFornecedor (idFornec, numTelefone) VALUES 
+(1, '53456456456'),
+(2, '53908789795');
 
 INSERT INTO Funcionario (cpfFunc, nomeFunc, nascFunc, endFunc) VALUES 
 ('11122233344', 'Pedro Alves', '1980-05-15', 'Rua F, 100 - São Paulo/SP'),
@@ -64,7 +68,7 @@ INSERT INTO Instalação (codPedido, idFunc, dataInst) VALUES
 
 SELECT c.idCliente, c.nome, t.numTelefone
 FROM Cliente c
-INNER JOIN Telefone t ON c.idCliente = t.idCliente;
+INNER JOIN TelefoneCliente t ON c.idCliente = t.idCliente;
 
 SELECT v.codPedido, c.nome AS cliente, f.nomeFunc AS vendedor, 
        v.dataVenda, v.valor
