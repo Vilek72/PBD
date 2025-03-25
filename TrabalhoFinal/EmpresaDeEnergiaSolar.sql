@@ -7,13 +7,15 @@ CREATE TABLE Cliente (
     PRIMARY KEY (idCliente)
 );
 
-CREATE TABLE Telefone (
+CREATE TABLE TelefoneCliente (
     idCliente INT,
     numTelefone VARCHAR(11),
     PRIMARY KEY (numTelefone),
     FOREIGN KEY (idCliente)
         REFERENCES Cliente (idCliente)
 );
+
+
 
 CREATE TABLE PessoaFisica (
     cpf VARCHAR(11),
@@ -43,6 +45,13 @@ CREATE TABLE Fornecedor (
     PRIMARY KEY (idFornec)
 );
 
+CREATE TABLE TelefoneFornecedor (
+    idFornec INT,
+    numTelefone VARCHAR(11),
+    PRIMARY KEY (numTelefone),
+    FOREIGN KEY (idFornec)
+        REFERENCES Fornecedor (idFornec)
+);
 
 CREATE TABLE Funcionario (
     idFunc INT AUTO_INCREMENT,
@@ -90,7 +99,7 @@ CREATE TABLE Instalação (
         REFERENCES Venda (codPedido),
     FOREIGN KEY (idFunc)
         REFERENCES Funcionario (idFunc)
-)
+);
 
 CREATE TABLE ProdutoTipo (
     idProduto INT AUTO_INCREMENT,
@@ -100,7 +109,7 @@ CREATE TABLE ProdutoTipo (
     PRIMARY KEY (idProduto),
     FOREIGN KEY (idFornec)
         REFERENCES Fornecedor (idFornec)
-)
+);
 
 CREATE TABLE ProdutoVenda (
     codPedido INT,
@@ -110,7 +119,7 @@ CREATE TABLE ProdutoVenda (
         REFERENCES Venda (codPedido),
     FOREIGN KEY (idProduto)
         REFERENCES ProdutoTipo (idProduto)
-)
+);
 
 CREATE TABLE ProdutoCliente (
     idCliente INT,
@@ -122,6 +131,4 @@ CREATE TABLE ProdutoCliente (
         REFERENCES Cliente (idCliente),
     FOREIGN KEY (idFunc)
         REFERENCES Funcionario (idFunc)
-)
-
-
+);
