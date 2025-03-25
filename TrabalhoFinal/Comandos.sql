@@ -1,58 +1,60 @@
 INSERT INTO Cliente (nome) VALUES 
-('João Silva'),
-('Maria Oliveira'),
-('Empresa ABC Ltda'),
-('Carlos Souza'),
-('Tech Solutions SA');
+('Otávio Pacheco'),
+('Ana Paula Andrade'),
+('ALDO Solar Ltda'),
+('Paulo Henrique Hoff'),
+('Jinko Solar');
 
 INSERT INTO PessoaFisica (cpf, idCliente, endereco) VALUES 
-('12345678901', 1, 'Rua A, 100 - São Paulo/SP'),
-('98765432109', 2, 'Av. B, 200 - Rio de Janeiro/RJ'),
-('45678912304', 4, 'Rua C, 300 - Belo Horizonte/MG');
+('12345678901', 1, 'R. General Osório, 122 - Pelotas/RS'),
+('98765432109', 2, 'R. Dom Pedro II, 75 - Pelotas/RS'),
+('45678912304', 4, 'R. Felix da Cunha, 303 - Pelotas/RS');
 
 INSERT INTO PessoaJuridica (cnpj, nomeEmpresa, endEmpresa, idCliente) VALUES 
-('12345678000190', 'Empresa ABC Ltda', 'Av. X, 1000 - São Paulo/SP', 3),
-('98765432000181', 'Tech Solutions SA', 'Rua Y, 2000 - Campinas/SP', 5);
+('94879947000168', 'Padaria Bom Preço', 'R. Tiradentes, 2114 - Pelotas/RS', 3),
+('19977931000172', 'Johnnie Jack', 'R. Santos Dumont, 590 - Pelotas/RS', 5);
 
 INSERT INTO TelefoneCliente (idCliente, numTelefone) VALUES 
 (1, '53987654321'),
-(2, '51987654321'),
-(3, '5333334444'),
-(4, '5333335555'),
-(5, '5333336666');
+(1, '53512859962'),
+(2, '53987654321'),
+(3, '51333344442'),
+(4, '53333355552'),
+(4, '51940028922'),
+(5, '55333264674');
 
 INSERT INTO Fornecedor (cnpjFornec, nomeFornec, endFornec) VALUES 
-('11222333000144', 'Fornecedor Alpha', 'Rua Z, 500 - São Paulo/SP'),
-('44555666000177', 'Fornecedor Beta', 'Av. W, 600 - Curitiba/PR');
+('81106957000119', 'ALDO Solar Ltda', 'Av. Advogado Horácio Raccanello Filho, 1836 - Maringá/PR'),
+('19518151000164', 'Jinko Solar', 'Av. Yingbin, 1 - Jiangxi/CH');
 
 INSERT INTO TelefoneFornecedor (idFornec, numTelefone) VALUES 
-(1, '53456456456'),
-(2, '53908789795');
+(1, '40932612000'),
+(2, '15052203150');
 
 INSERT INTO Funcionario (cpfFunc, nomeFunc, nascFunc, endFunc) VALUES 
-('11122233344', 'Pedro Alves', '1980-05-15', 'Rua F, 100 - São Paulo/SP'),
-('55566677788', 'Ana Costa', '1985-08-20', 'Av. G, 200 - São Paulo/SP'),
-('99988877766', 'Marcos Lima', '1975-03-10', 'Rua H, 300 - Campinas/SP'),
-('33344455566', 'Juliana Santos', '1990-11-25', 'Av. I, 400 - São Paulo/SP');
+('05356942028', 'Luis Eduardo Rasch', '2004-10-14', 'R. Álvaro Chaves, 356 - Pelotas/RS'),
+('56942028053', 'Paulo Vinicius', '2003-08-20', 'Av. Santa Cruz, 77 - Pelotas/RS'),
+('04202853591', 'Marcos Lima', '2001-01-28', 'R. Lindolfo Color, 45 - Pelotas/RS'),
+('33344455566', 'Frederico Bolaños', '1992-04-05', 'R. Nilton Barbosa, 13 - Camaquã/RS');
 
 INSERT INTO Tecnico (idFunc, salario, servicos) VALUES 
-(1, 3500.00, 0),
-(2, 3800.00, 0);
+(1, 3587.25, 0),
+(2, 3839.60, 0);
 
 INSERT INTO Vendedor (idFunc, salario, vendas) VALUES 
-(3, 3000.00, 0),
-(4, 5000.00, 0);
+(3, 2000.00, 0),
+(4, 4200.00, 0);
 
 INSERT INTO ProdutoTipo (idFornec, nome, preco) VALUES 
-(1, 'Ar-condicionado Split 12.000 BTUs', 2500.00),
-(1, 'Ar-condicionado Split 18.000 BTUs', 3200.00),
-(2, 'Purificador de Água', 800.00),
-(2, 'Climatizador de Ar', 1200.00);
+(1, 'Gerador Fotovoltaico 4,44KWP Growatt', 2125.00),
+(1, 'Gerador Fotovoltaico 7,05KWP Growatt', 3250.00),
+(2, 'Painel Solar Jinko 530W', 700.00),
+(2, 'Painel Solar Jinko 685W', 1399.99);
 
 INSERT INTO Venda (idCliente, idFunc, dataVenda) VALUES 
-(1, 3, '2023-01-15'),
-(3, 3, '2023-02-20'),
-(4, 3, '2023-03-10');
+(1, 3, '2025-01-15'),
+(3, 3, '2025-03-07'),
+(4, 4, '2025-01-21');
 
 INSERT INTO ProdutoVenda (codPedido, idProduto, quantidade) VALUES 
 (1, 1, 1),
@@ -68,7 +70,7 @@ INSERT INTO Instalação (codPedido, idFunc, dataInst) VALUES
 
 SELECT c.idCliente, c.nome, t.numTelefone
 FROM Cliente c
-INNER JOIN TelefoneCliente t ON c.idCliente = t.idCliente;
+INNER JOIN Telefone t ON c.idCliente = t.idCliente;
 
 SELECT v.codPedido, c.nome AS cliente, f.nomeFunc AS vendedor, 
        v.dataVenda, v.valor
