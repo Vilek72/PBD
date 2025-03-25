@@ -4,6 +4,7 @@ Use TrabalhoFinal;
 CREATE TABLE Cliente (
     idCliente INT AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(255),
     PRIMARY KEY (idCliente)
 );
 
@@ -15,22 +16,16 @@ CREATE TABLE TelefoneCliente (
         REFERENCES Cliente (idCliente)
 );
 
-
-
 CREATE TABLE PessoaFisica (
     cpf VARCHAR(11),
     idCliente INT,
-    endereco VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (cpf),
     FOREIGN KEY (idCliente)
         REFERENCES Cliente (idCliente)
 );
 
-
 CREATE TABLE PessoaJuridica (
     cnpj VARCHAR(14),
-    nomeEmpresa VARCHAR(50) NOT NULL,
-    endEmpresa VARCHAR(255) DEFAULT NULL,
     idCliente INT,
     PRIMARY KEY (cnpj),
     FOREIGN KEY (idCliente)
@@ -99,7 +94,7 @@ CREATE TABLE Instalação (
         REFERENCES Venda (codPedido),
     FOREIGN KEY (idFunc)
         REFERENCES Funcionario (idFunc)
-);
+)
 
 CREATE TABLE ProdutoTipo (
     idProduto INT AUTO_INCREMENT,
@@ -109,7 +104,7 @@ CREATE TABLE ProdutoTipo (
     PRIMARY KEY (idProduto),
     FOREIGN KEY (idFornec)
         REFERENCES Fornecedor (idFornec)
-);
+)
 
 CREATE TABLE ProdutoVenda (
     codPedido INT,
@@ -119,7 +114,7 @@ CREATE TABLE ProdutoVenda (
         REFERENCES Venda (codPedido),
     FOREIGN KEY (idProduto)
         REFERENCES ProdutoTipo (idProduto)
-);
+)
 
 CREATE TABLE ProdutoCliente (
     idCliente INT,
@@ -131,4 +126,4 @@ CREATE TABLE ProdutoCliente (
         REFERENCES Cliente (idCliente),
     FOREIGN KEY (idFunc)
         REFERENCES Funcionario (idFunc)
-);
+)
