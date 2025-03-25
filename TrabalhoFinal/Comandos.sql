@@ -1,26 +1,24 @@
-INSERT INTO Cliente (nome) VALUES 
-('Otávio Pacheco'),
-('Ana Paula Andrade'),
-('ALDO Solar Ltda'),
-('Paulo Henrique Hoff'),
-('Jinko Solar');
+INSERT INTO Cliente (nome, endereco) VALUES 
+('Otávio Pacheco', 'R. General Osório, 122 - Pelotas/RS'),
+('Ana Paula Andrade', 'R. Dom Pedro II, 75 - Pelotas/RS'),
+('ALDO Solar Ltda', 'R. Felix da Cunha, 303 - Pelotas/RS'),
+('Paulo Henrique Hoff', 'R. Tiradentes, 2114 - Pelotas/RS'),
+('Jinko Solar', 'R. Santos Dumont, 590 - Pelotas/RS');
 
-INSERT INTO PessoaFisica (cpf, idCliente, endereco) VALUES 
-('12345678901', 1, 'R. General Osório, 122 - Pelotas/RS'),
-('98765432109', 2, 'R. Dom Pedro II, 75 - Pelotas/RS'),
-('45678912304', 4, 'R. Felix da Cunha, 303 - Pelotas/RS');
+INSERT INTO PessoaFisica (cpf, idCliente) VALUES 
+('12345678901', 1),
+('98765432109', 2),
+('45678912304', 4);
 
-INSERT INTO PessoaJuridica (cnpj, nomeEmpresa, endEmpresa, idCliente) VALUES 
-('94879947000168', 'Padaria Bom Preço', 'R. Tiradentes, 2114 - Pelotas/RS', 3),
-('19977931000172', 'Johnnie Jack', 'R. Santos Dumont, 590 - Pelotas/RS', 5);
+INSERT INTO PessoaJuridica (cnpj, idCliente) VALUES 
+('94879947000168', 3),
+('19977931000172', 5);
 
 INSERT INTO TelefoneCliente (idCliente, numTelefone) VALUES 
-(1, '53987654321'),
 (1, '53512859962'),
 (2, '53987654321'),
 (3, '51333344442'),
 (4, '53333355552'),
-(4, '51940028922'),
 (5, '55333264674');
 
 INSERT INTO Fornecedor (cnpjFornec, nomeFornec, endFornec) VALUES 
@@ -52,9 +50,9 @@ INSERT INTO ProdutoTipo (idFornec, nome, preco) VALUES
 (2, 'Painel Solar Jinko 685W', 1399.99);
 
 INSERT INTO Venda (idCliente, idFunc, dataVenda) VALUES 
-(1, 3, '2025-01-15'),
-(3, 3, '2025-03-07'),
-(4, 4, '2025-01-21');
+(1, 3, '2023-01-15'),
+(3, 3, '2023-03-07'),
+(4, 4, '2023-01-21');
 
 INSERT INTO ProdutoVenda (codPedido, idProduto, quantidade) VALUES 
 (1, 1, 1),
@@ -64,16 +62,26 @@ INSERT INTO ProdutoVenda (codPedido, idProduto, quantidade) VALUES
 (3, 1, 1);
 
 INSERT INTO Instalação (codPedido, idFunc, dataInst) VALUES 
-(1, 1, '2023-01-16'),
-(2, 2, '2023-02-21'),
+(1, 1, '2023-01-20'),
+(2, 2, '2023-04-01'),
 (3, 1, '2023-03-11');
 
-SELECT c.idCliente, c.nome, t.numTelefone
+SELECT c.idCliente as Id, c.nome as Nome, t.numTelefone as Telefone
 FROM Cliente c
-INNER JOIN Telefone t ON c.idCliente = t.idCliente;
+INNER JOIN TelefoneCliente t ON c.idCliente = t.idCliente;
 
-SELECT v.codPedido, c.nome AS cliente, f.nomeFunc AS vendedor, 
-       v.dataVenda, v.valor
+SELECT c.idCliente as Id, pf.cpf as CPF, c.nome as Nome, t.numTelefone as Telefone
+FROM Cliente c
+INNER JOIN TelefoneCliente t ON c.idCliente = t.idCliente
+INNER JOIN PessoaFisica pf ON c.idCliente = pf.idCliente;
+
+SELECT c.idCliente as Id, pj.cnpj as CNPJ, c.nome as Nome, t.numTelefone as Telefone
+FROM Cliente c
+INNER JOIN TelefoneCliente t ON c.idCliente = t.idCliente
+INNER JOIN PessoaJuridica pj ON c.idCliente = pj.idCliente;
+
+SELECT v.codPedido, c.nome AS Cliente, f.nomeFunc AS Vendedor, 
+       v.dataVenda as DataVenda, v.valor as Valor
 FROM Venda v
 INNER JOIN Cliente c ON v.idCliente = c.idCliente
 INNER JOIN Funcionario f ON v.idFunc = f.idFunc;
@@ -107,6 +115,8 @@ INNER JOIN Cliente c ON pc.idCliente = c.idCliente
 INNER JOIN ProdutoTipo pt ON pc.idProduto = pt.idProduto
 INNER JOIN Funcionario f ON pc.idFunc = f.idFunc
 ORDER BY c.nome, pc.dataInst;
+
+
 
 
 
