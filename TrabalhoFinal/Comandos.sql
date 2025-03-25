@@ -86,37 +86,42 @@ FROM Venda v
 INNER JOIN Cliente c ON v.idCliente = c.idCliente
 INNER JOIN Funcionario f ON v.idFunc = f.idFunc;
 
-SELECT pv.codPedido, pt.nome AS produto, pv.quantidade, 
-       pt.preco, (pv.quantidade * pt.preco) AS subtotal,
-       f.nomeFornec AS fornecedor
+SELECT pv.codPedido as Pedido, pt.nome AS Produto, pv.quantidade as Quant, 
+       pt.preco as PrecoProduto, (pv.quantidade * pt.preco) AS Subtotal,
+       f.nomeFornec AS Fornecedor
 FROM ProdutoVenda pv
 INNER JOIN ProdutoTipo pt ON pv.idProduto = pt.idProduto
 INNER JOIN Fornecedor f ON pt.idFornec = f.idFornec
 ORDER BY pv.codPedido;
 
-SELECT i.codPedido, f.nomeFunc AS tecnico, c.nome AS cliente, 
-       i.dataInst, v.dataVenda
+SELECT i.codPedido as Pedido, f.NomeFunc AS Tecnico, c.nome AS Cliente, 
+       i.DataInst, v.dataVenda as DataVenda
 FROM Instalação i
 INNER JOIN Funcionario f ON i.idFunc = f.idFunc
 INNER JOIN Venda v ON i.codPedido = v.codPedido
 INNER JOIN Cliente c ON v.idCliente = c.idCliente;
 
-SELECT f.nomeFunc AS vendedor, COUNT(v.codPedido) AS total_vendas, 
-       SUM(v.valor) AS valor_total
+SELECT f.nomeFunc AS Vendedor, COUNT(v.codPedido) AS TotalVendas, 
+       SUM(v.valor) AS ValorTotal
 FROM Funcionario f
 LEFT JOIN Venda v ON f.idFunc = v.idFunc
 WHERE EXISTS (SELECT 1 FROM Vendedor WHERE idFunc = f.idFunc)
 GROUP BY f.nomeFunc;
 
-SELECT c.nome AS cliente, pt.nome AS produto, 
-       pc.dataInst, f.nomeFunc AS tecnico
-FROM ProdutoCliente pc
-INNER JOIN Cliente c ON pc.idCliente = c.idCliente
-INNER JOIN ProdutoTipo pt ON pc.idProduto = pt.idProduto
-INNER JOIN Funcionario f ON pc.idFunc = f.idFunc
-ORDER BY c.nome, pc.dataInst;
-
-
+SELECT 
+    c.nome AS Cliente,
+    pt.nome AS ProdutoInstalado,
+    pc.dataInst,
+    f.nomeFunc AS Tecnico
+FROM
+    ProdutoCliente pc
+        INNER JOIN
+    Cliente c ON pc.idCliente = c.idCliente
+        INNER JOIN
+    ProdutoTipo pt ON pc.idProduto = pt.idProduto
+        INNER JOIN
+    Funcionario f ON pc.idFunc = f.idFunc
+ORDER BY c.nome , pc.dataInst;
 
 
 
