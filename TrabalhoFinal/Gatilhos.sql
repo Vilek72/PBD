@@ -43,8 +43,8 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE TRIGGER before_telefone_insert
-BEFORE INSERT ON Telefone
+CREATE TRIGGER before_telefone_cliente_insert
+BEFORE INSERT ON TelefoneCliente
 FOR EACH ROW
 BEGIN
     DECLARE cliente_existe INT;
@@ -54,6 +54,24 @@ BEGIN
     WHERE idCliente = NEW.idCliente;
     
     IF cliente_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cliente não existe';
+    END IF;
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER before_telefone_fornecedor_insert
+BEFORE INSERT ON TelefoneFornecedor
+FOR EACH ROW
+BEGIN
+    DECLARE fornec_existe INT;
+    
+    SELECT COUNT(*) INTO fornec_existe 
+    FROM Fornecedor
+    WHERE idFornec = NEW.idFornec;
+    
+    IF fornec_existe = 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cliente não existe';
     END IF;
